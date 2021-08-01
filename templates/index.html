@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>View List</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    </head>
+    <style>
+        a{
+            text-decoration: none !important;
+        }
+    </style>
+    <body>
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Grocery App</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto"></ul>
+                {% if user.is_authenticated %}
+                    <span class="navbar-text">
+                        <a class="" href="#">Welcome, {{user.username}}</a>
+                        <a class="btn btn-danger" href="{% url 'groceryapp:logout' %}">Logout</a>
+                    </span>
+                {% else %}
+                    <span class="navbar-text">
+                        <a class="" href="{% url 'groceryapp:login' %}">Login</a>
+                    </span>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="container mt-5">
+            <!-- top -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <h1>View Grocery List</h1>
+                </div>
+                <form class="col-lg-6 float-right" method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <!-- Date Filtering-->
+                            <input name = "date" type="date" class="form-control">
+                        </div>
+                        <div class="col-lg-4">
+                            <input type="submit" class="btn btn-danger" value="filter">
+                        </div>
+                    </div>
+                
+                </form>
+            </div>
+            {% if user.is_authenticated %}
+                <div class="row">
+                    <div class="col-lg-6">
+                        <a href="{% url 'groceryapp:add' %}">Add Item</a>
+                    </div>
+                </div>
+            {% endif %}
+            {% for message in messages %}
+                <div class="container-fluid p-0">
+                    <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+            <!-- // top -->
+            <!-- Grocery Cards -->
+            <div class="row mt-4">
+                <!--- -->
+                <!-- Loop This -->
+                {% for item in items %}
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-title"> {{ item.name }}</h5>
+                          <h6 class="card-subtitle mb-2 text-muted">{{ item.quantity }}</h6>
+                          <!-- if condition for class according to status -->
+                          <p class="{% if item.status == 'BOUGHT' %} text-success {% elif item.status == 'PENDING' %} text-info {% else %} text-danger {% endif %}">{{ item.status }}</p>
+                            {% if user.is_authenticated %}
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <a href="{% url 'groceryapp:update' item.id %}">Update</a>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <a href="{% url 'groceryapp:delete' item.id %}">Delete</a>
+                                    </div> 
+                                </div>
+                            {% endif %}
+                        </div>
+                      </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+</html>
