@@ -1,11 +1,13 @@
 from django.db import models
 
+
 # Create your models here.
 VISIBILITY_CHOICES = (
     ("PENDING", "PENDING"),
     ("NOT AVAILABLE", "NOT AVAILABLE"),
     ("BOUGHT", "BOUGHT")
 )
+
 
 class Grocery(models.Model):
     name = models.CharField(max_length=500)

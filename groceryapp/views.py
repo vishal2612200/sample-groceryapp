@@ -1,15 +1,17 @@
-
 from django.shortcuts import  render, redirect
-from .forms import NewUserForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm 
 
-from .forms import AddGroceryForm
+from .forms import NewUserForm
 from .models import Grocery
 
 
 def homepage(request):
+	"""
+	Function for home page related utilities
+	"""
+
 	if request.method == "POST":
 		date = request.POST['date']
 		grocery_items = Grocery.objects.filter(added_date = date)
@@ -18,7 +20,12 @@ def homepage(request):
 		grocery_items = Grocery.objects.all()
 	return render(request, "index.html", context={"items": grocery_items})
 
+
 def register_request(request):
+	"""
+	Function to register user with POST request
+	"""
+
 	if request.method == "POST":
 		form = NewUserForm(request.POST)
 		if form.is_valid():
@@ -32,6 +39,10 @@ def register_request(request):
 
 
 def login_request(request):
+	"""
+	Function to login user into the app
+	"""
+
 	if request.method == "POST":
 		form = AuthenticationForm(request, data=request.POST)
 		if form.is_valid():
@@ -47,11 +58,14 @@ def login_request(request):
 		else:
 			messages.error(request,"Invalid username or password.")
 	form = AuthenticationForm()
+
 	return render(request, "login.html", context={"login_form":form})
     
 
 def add_form(request):
-
+	"""
+	Function to add grocery items with POST request
+	"""
 	if request.method == "POST":
 		name = request.POST['name']
 		quantity = request.POST['quantity']
@@ -62,13 +76,15 @@ def add_form(request):
 		# print(form)
 		return redirect("groceryapp:homepage")
 		
-	
 	return render(request, "add.html")
 
 
 
 def update_form(request, grocery_id):
-
+	"""
+	Function to update specific object with object id
+	"""
+	
 	if request.method == "POST":
 		try: 
 			name = request.POST['name']
@@ -85,14 +101,24 @@ def update_form(request, grocery_id):
 		
 	return render(request, "update.html")
 
+
 def delete_form(request, grocery_id):
+	"""
+	Function to delete Grocery object with particular id
+	"""
+
 	Grocery.objects.get(id = grocery_id).delete()			
-			
 	messages.success(request, "Grocery Item successfully deleted")
+
 	return redirect("groceryapp:homepage")
 
 
 def logout_request(request):
+	"""
+	Function to logout user
+	"""
+	
 	logout(request)
 	messages.info(request, "You have successfully logged out.") 
+
 	return redirect("groceryapp:homepage")
